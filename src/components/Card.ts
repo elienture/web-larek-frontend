@@ -1,87 +1,106 @@
-import {Component} from "./base/component";
+import { Component } from './base/component';
 import { IProductItem } from '../types';
 import { ensureElement, createElement } from '../utils/utils';
+import { settings } from '../utils/constants';
 
-interface ICardActions {
-    onClick: (event: MouseEvent) => void;
+export interface ICardActions {
+	onClick: (event: MouseEvent) => void;
 }
 
-export interface ICard<T> {
-    id: string;
-    title: string;
-    description?: string;
-    image: string;
-    price: number | null;
-    category: string;
-    selected: boolean;
+export interface ICard extends IProductItem {
+	index: string;
 }
 
-export class Card<T> extends Component<ICard<T>> {
-    protected _title: HTMLElement;
-    protected _image: HTMLImageElement;
+export class Card extends Component<ICard> {
+    protected _index: HTMLElement;
+	protected _title: HTMLElement;
+	protected _image: HTMLImageElement;
+	protected _category: HTMLElement;
     protected _description?: HTMLElement;
-    protected _category: HTMLElement;
-    protected _price: HTMLElement;
-    protected _button: HTMLButtonElement;
+	protected _price: HTMLElement;
+	protected _button: HTMLButtonElement;
 
-    constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {
-        super(container);
+	constructor(container: HTMLElement, actions: ICardActions) {
+		super(container);
 
-        this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-        this._image = ensureElement<HTMLImageElement>(`.${blockName}__image`, container);
-        this._button = container.querySelector(`.${blockName}__button`);
-        this._description = container.querySelector(`.${blockName}__text`);
-        this._price = container.querySelector(`.${blockName}__price`);
-        this._category = container.querySelector(`.${blockName}__category`);
+		this._index = container.querySelector('.basket__item-index');
+		this._description = container.querySelector('.card__text');
+		this._image = container.querySelector('.card__image');
+		this._title = ensureElement<HTMLElement>('.card__title', container);
+		this._category = container.querySelector('.card__category');
+		this._price = ensureElement<HTMLElement>('.card__price', container);
+		this._button = container.querySelector('.card__button');
 
-        if (actions?.onClick) {
-            if (this._button) {
-                this._button.addEventListener('click', actions.onClick);
-            } else {
-                container.addEventListener('click', actions.onClick);
-            }
-        }
-    }
+		if (actions?.onClick) {
+			if (this._button) {
+				this._button.addEventListener('click', actions.onClick);
+			} else {
+				container.addEventListener('click', actions.onClick);
+			}
+		}
+	}
 
-    // Геттер и Сеттер для персонального id товара
+	// Геттер и Сеттер для персонального id товара
 
-    set id(value: string) {
-        this.container.dataset.id = value;
-    }
+    set index(value: string) {
+		this._index.textContent = value;
+	}
 
-    get id(): string {
-        return this.container.dataset.id || '';
-    }
+	get index(): string {
+		return this._index.textContent || '';
+	}
 
-    // Геттер и Сеттер для названия товара
+	set id(value: string) {
+		this.container.dataset.id = value;
+	}
+	get id(): string {
+		return this.container.dataset.id || '';
+	}
 
-    set title(value: string) {
-        this.setText(this._title, value);
-    }
+	// Геттер и Сеттер для названия товара
 
-    get title(): string {
-        return this._title.textContent || '';
-    }
+	set title(value: string) {
+		this.setText(this._title, value);
+	}
 
-    // Сеттер для изображения товара
+	get title(): string {
+		return this._title.textContent || '';
+	}
 
-    set image(value: string) {
-        this.setImage(this._image, value, this.title)
-    }
+	// Сеттер для изображения товара
 
-     // Сеттер для описания товара
+	set image(value: string) {
+		this.setImage(this._image, value, this.title);
+	}
+
+	set category(value: string) {
+		this.setText(this._category, value);
+		this._category.classList.add(settings[value]);
+	}
+
+	get category(): string {
+		return this._category?.textContent || '';
+	}
 
     set description(value: string) {
-        this.setText(this._description, value);
-    }
-//Сеттер и геттер категории товара
-    //get category(): string
+		this._description.textContent = value;
+	}
 
-    //set category(value: string) 
 
-//Сеттер и геттер стоимости товара    
+	set price(value: number) {
+		this.setText(this._price, value ? `${value} синапсов` : 'Бесценно');
+		if (this._button && !value) {
+			this._button.disabled = true;
+		}
+	}
 
-    //get price(): number
+	get price(): number {
+		return +this._price.textContent || 0;
+	}
 
-    //set price(value: number)
+    set button(value: string) {
+		if (this._button) {
+			this._button.textContent = value;
+		}
+	}
 }
