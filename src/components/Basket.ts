@@ -1,8 +1,8 @@
-import { IProductItem } from '../../types';
-import { createElement, ensureElement } from '../../utils/utils';
-import { Component } from '../base/component';
-import { EventEmitter, IEvents } from '../base/events';
-import { ICard, ICardActions } from '../Card';
+import { IProductItem } from '../types';
+import { createElement, ensureElement } from '../utils/utils';
+import { Component } from './base/component';
+import { EventEmitter, IEvents } from './base/events';
+import { ICard, ICardActions } from './Card';
 
 export interface IBasket {
     items: HTMLElement[];
@@ -31,31 +31,29 @@ export class Basket extends Component<IBasket> {
 		this.items = [];
 	}
 
-    set items(items: HTMLElement[]) {
+	toggleButton(state: boolean) {
+        this.setDisabled(this._button, state);
+    } 
+
+	set items(items: HTMLElement[]) {
 		if (items.length) {
-			this._list.replaceChildren(...items);
+		  this._list.replaceChildren(...items);
+		  this.toggleButton(false); 
 		} else {
-			this._list.replaceChildren(
-				createElement<HTMLParagraphElement>('p', {
-					textContent: 'Корзина пуста',
-				})
-			);
+		  this._list.replaceChildren(
+			createElement<HTMLParagraphElement>('p', {
+			  textContent: 'Корзина пуста'
+			})
+		  );
+		  this.toggleButton(true); 
 		}
-		this._button.disabled = items.length ? false : true;
-	}
+	  }
 
 
 	set total(total: number) {
 		this.setText(this._total, `${total} синапсов`);
 	}
 
-    set selected(items: string[]) {
-		if (items.length) {
-			this.setDisabled(this._button, false);
-		} else {
-			this.setDisabled(this._button, true);
-		}
-	}
     
 }
 

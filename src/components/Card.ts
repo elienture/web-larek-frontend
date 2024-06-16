@@ -9,6 +9,8 @@ export interface ICardActions {
 
 export interface ICard extends IProductItem {
 	index: string;
+    buttonState: string;
+    
 }
 
 export class Card extends Component<ICard> {
@@ -19,6 +21,8 @@ export class Card extends Component<ICard> {
     protected _description?: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button: HTMLButtonElement;
+    protected _buttonState: 'В корзину' | 'Удалить из корзины';
+
 
 	constructor(container: HTMLElement, actions: ICardActions) {
 		super(container);
@@ -30,6 +34,7 @@ export class Card extends Component<ICard> {
 		this._category = container.querySelector('.card__category');
 		this._price = ensureElement<HTMLElement>('.card__price', container);
 		this._button = container.querySelector('.card__button');
+        this._buttonState = 'В корзину';
 
 		if (actions?.onClick) {
 			if (this._button) {
@@ -43,7 +48,7 @@ export class Card extends Component<ICard> {
 	// Геттер и Сеттер для персонального id товара
 
     set index(value: string) {
-		this._index.textContent = value;
+		this.setText(this._index, value);
 	}
 
 	get index(): string {
@@ -74,33 +79,41 @@ export class Card extends Component<ICard> {
 	}
 
 	set category(value: string) {
-		this.setText(this._category, value);
-		this._category.classList.add(settings[value]);
-	}
+        this.setText(this._category, value);
+        this.toggleClass(this._category, settings[value], true);
+      }
 
 	get category(): string {
 		return this._category?.textContent || '';
 	}
 
     set description(value: string) {
-		this._description.textContent = value;
+		this.setText(this._description, value);
 	}
-
 
 	set price(value: number) {
 		this.setText(this._price, value ? `${value} синапсов` : 'Бесценно');
-		if (this._button && !value) {
-			this._button.disabled = true;
-		}
+		if (this._button) {
+            this.setDisabled(this._button, !value);
+          }        
 	}
 
 	get price(): number {
 		return +this._price.textContent || 0;
 	}
 
-    set button(value: string) {
-		if (this._button) {
-			this._button.textContent = value;
-		}
-	}
+    set buttonState(state: 'В корзину' | 'Удалить из корзины') {
+        this._buttonState = state;
+        if (this._button) {
+          this.setText(this._button, state);
+        }
+      }
+    
+      get buttonState(): 'В корзину' | 'Удалить из корзины' {
+        return this._buttonState;
+      }
+    
+    
+
+    
 }

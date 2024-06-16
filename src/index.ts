@@ -5,17 +5,15 @@ import { WebLarekApi } from './components/WebLarekApi';
 import { API_URL, CDN_URL } from './utils/constants';
 import { EventEmitter } from './components/base/events';
 import { Modal } from './components/common/Modal';
-import { Basket } from './components/common/Basket';
+import { Basket } from './components/Basket';
 import { Page } from './components/Page';
 import { Card } from './components/Card';
 import { Order, Contact } from './components/Order';
 import {
 	AppState,
-	ProductItem,
 	CatalogChangeEvent,
 } from './components/AppData';
-import { Success } from './components/common/Success';
-import { ApiListResponse } from './components/base/api';
+import { Success } from './components/Success';
 import { IProductItem, IOrder, IOrderForm, IContactForm } from './types';
 
 //Константы
@@ -70,28 +68,32 @@ events.on<CatalogChangeEvent>('items:changed', () => {
 });
 
 // Открытие карточки
+
 events.on('card:select', (item: IProductItem) => {
 	page.locked = true;
 	const card = new Card(cloneTemplate(cardPreviewTemplate), {
-		onClick: () => {
-			events.emit('card:toBasket', item);
-			card.button =
-				appData.basket.indexOf(item) !== -1
-					? 'Удалить из корзины'
-					: 'В корзину';
-		},
+	  onClick: () => {
+		events.emit('card:toBasket', item);
+		if (appData.basket.indexOf(item) !== -1) {
+		  card.buttonState = 'Удалить из корзины'; 
+		} else {
+		  card.buttonState = 'В корзину';
+		}
+	  },
 	});
+	card.buttonState = appData.basket.indexOf(item) !== -1 ? 'Удалить из корзины' : 'В корзину';
+
 	modal.render({
-		content: card.render({
-			id: item.id,
-			title: item.title,
-			image: item.image,
-			category: item.category,
-			description: item.description,
-			price: item.price,
-		}),
+	  content: card.render({
+		id: item.id,
+		title: item.title,
+		image: item.image,
+		category: item.category,
+		description: item.description,
+		price: item.price,
+	  }),
 	});
-});
+  });
 
 // Блокировка прокрутки страницы при открытии модального окна
 events.on('modal:open', () => {
@@ -124,7 +126,6 @@ events.on('basket:remove', (item: IProductItem) => {
 
 // Открытие корзины
 events.on('basket:open', () => {
-	basket.selected = appData.basket.map((item) => item.id);
 	modal.render({
 		content: basket.render({
 			total: appData.getTotal(),
