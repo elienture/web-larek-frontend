@@ -1,6 +1,6 @@
 import { Component } from './base/component';
 import { IProductItem } from '../types';
-import { ensureElement, createElement } from '../utils/utils';
+import { ensureElement } from '../utils/utils';
 import { settings } from '../utils/constants';
 
 export interface ICardActions {

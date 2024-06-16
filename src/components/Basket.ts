@@ -1,8 +1,6 @@
-import { IProductItem } from '../types';
 import { createElement, ensureElement } from '../utils/utils';
 import { Component } from './base/component';
-import { EventEmitter, IEvents } from './base/events';
-import { ICard, ICardActions } from './Card';
+import { IEvents } from './base/events';
 
 export interface IBasket {
     items: HTMLElement[];
